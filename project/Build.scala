@@ -9,14 +9,14 @@ object ApplicationBuild extends Build {
   val appName         = "velocity-formatter"
   val appVersion      = "0.1-SNAPSHOT"
 
-  lazy val scalaRiformSettings = ScalariformKeys.preferences := FormattingPreferences()
-    .setPreference(IndentWithTabs, true)
+  lazy val myScalariformSettings = ScalariformKeys.preferences := FormattingPreferences()
+    .setPreference(IndentWithTabs, false)
     .setPreference(DoubleIndentClassDeclaration, true)
     .setPreference(PreserveDanglingCloseParenthesis, true)
 
   lazy val root = Project(appName, base = file(".")).settings(
     organization := appOrganization,
     version := appVersion
-  ).settings(scalariformSettings: _*).settings(scalaRiformSettings)
+  ).settings(scalariformSettings: _*).settings(myScalariformSettings)
 
 }
