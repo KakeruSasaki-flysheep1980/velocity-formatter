@@ -5,13 +5,13 @@ import io.Source
 import java.util.regex.Matcher
 import scala.Some
 
-object Formatter {
+class Formatter(val lineSeparator: String, val indentString: String) {
 
-  val LineSeparator = "\n"
-  val IndentString = " "
-  val EncodeCharset = "UTF-8"
+  def execute(input: String): String = {
+    joinWithIndent(splitToNodes(input))
+  }
 
-  def searchIndex(str: String, left: Char, right: Char): Int = {
+  protected def searchIndex(str: String, left: Char, right: Char): Int = {
     val firstLeftIndex = str.indexOf(left)
     var diff = 0
     // TODO indexWhereを使ってできそう
@@ -27,7 +27,7 @@ object Formatter {
   }
 
   //    @scala.annotation.tailrec
-  def splitToNodes(str: String): List[Node] = {
+  protected def splitToNodes(str: String): List[Node] = {
 
     def splitHtmlNode = {
       lazy val indexOfSplit = searchIndex(str, '<', '>')
@@ -53,13 +53,16 @@ object Formatter {
         case _@ s if s.startsWith("#parse") => (indexOfSplit, NodeType.ParseDirective)
         case _@ s if s.startsWith("#else") => ("#else".length, NodeType.ElseDirective)
         case _@ s if s.startsWith("#end") => ("#end".length, NodeType.EndDirective)
-        case _@ s if s.startsWith("#*") => (str.indexOf("*#") + "*#".length, NodeType.VelocityMultiComment)
-        case _@ s if s.startsWith("##") => (str.indexOf(LineSeparator), NodeType.VelocitySingleComment)
+        case _@ s if s.startsWith("#*") => {
+          val right = "*#"
+          (str.indexOf(right) + right.length, NodeType.VelocityMultiComment)
+        }
+        case _@ s if s.startsWith("##") => (str.indexOf(lineSeparator), NodeType.VelocitySingleComment)
       }
     }
 
     // HTML関連やVelocity関連の文字列を検索
-    val regex = List("<", "#", LineSeparator).mkString("|").r
+    val regex = List("<", "#", lineSeparator).mkString("|").r
     regex.findFirstMatchIn(str) match {
       case Some(m) => {
         // 分割位置 - 文字列の最初からこのindex値までを取り出す
@@ -69,9 +72,9 @@ object Formatter {
             (m.start, NodeType.Other)
           } else {
             Matcher.quoteReplacement(m.group(0)) match {
-              case LineSeparator => (m.end, NodeType.LineSeparator)
-              case "<" => splitHtmlNode
-              case "#" => splitVelocityNode
+              case _@ s if s == lineSeparator => (m.end, NodeType.LineSeparator)
+              case _@ s if s == "<" => splitHtmlNode
+              case _@ s if s == "#" => splitVelocityNode
             }
           }
         }
@@ -84,15 +87,15 @@ object Formatter {
     }
   }
 
-  def joinWithIndent(nodes: List[Node]): String = {
+  protected def joinWithIndent(nodes: List[Node]): String = {
     var indentLevel = 0
     val builder = new StringBuilder
     nodes.foreach { node =>
-      def indent = List.fill(indentLevel)(IndentString).mkString
+      def indent = List.fill(indentLevel)(indentString).mkString
 
       // 改行を挿入
       if (builder.isEmpty == false && node.t != NodeType.LineSeparator && node.t != NodeType.VelocitySingleComment) {
-        builder.append(LineSeparator)
+        builder.append(lineSeparator)
       }
 
       node.t match {
@@ -117,9 +120,9 @@ object Formatter {
           builder.append(node.s)
         }
         case NodeType.VelocityMultiComment => {
-          if (node.s.contains(LineSeparator)) { // 複数行コメント
+          if (node.s.contains(lineSeparator)) { // 複数行コメント
             builder.append(indent)
-            builder.append(node.trimmed.replaceAll(LineSeparator, LineSeparator + indent + " * "))
+            builder.append(node.trimmed.replaceAll(lineSeparator, lineSeparator + indent + " * "))
           } else { // 単一行コメント
             builder.append(indent)
             builder.append(node.trimmed)
@@ -135,26 +138,38 @@ object Formatter {
     builder.toString
   }
 
-  def format(fileName: String): String = {
-    val file = new File(fileName)
-    val input = Source.fromFile(file, EncodeCharset).getLines.toList.mkString(LineSeparator)
-    val nodes = splitToNodes(input)
-    val ret = joinWithIndent(nodes)
+}
 
-    //    val output = "htmls/output.vm"
-    //    val writer = new OutputStreamWriter(new FileOutputStream(new File(output)), EncodeCharset)
-    //    writer.write(ret)
-    //    writer.flush
-    //    writer.close
+object Formatter {
 
-    ret
+  private val DefaultEncodeCharset = "utf-8"
+  private val DefaultLineSeparator = "\n"
+  private val DefaultIndentString = "\t"
+
+  def format(str: String, encodeCharset: String, lineSeparator: String, indentString: String): String = {
+    new Formatter(lineSeparator, indentString).execute(str)
   }
 
-  object NodeType extends Enumeration {
-    val LeftHtmlTag, RightHtmlTag, SingleHtmlTag, DoctypeHtmlTag, VelocitySingleComment, VelocityMultiComment, IfDirective, ElseIfDirective, ElseDirective, EndDirective, SetDirective, ParseDirective, ForeachDirective, LineSeparator, Other = Value
-  }
-  case class Node(s: String, t: NodeType.Value) {
-    lazy val trimmed = s.trim
+  def format(file: File, encodeCharset: String = DefaultEncodeCharset, lineSeparator: String = DefaultLineSeparator, indentString: String = DefaultIndentString): String = {
+    val input = Source.fromFile(file, encodeCharset).getLines.toList.mkString(lineSeparator)
+    this.format(input, encodeCharset, lineSeparator, indentString)
   }
 
+  def format2(file: File, encodeCharset: String = DefaultEncodeCharset, lineSeparator: String = DefaultLineSeparator, indentString: String = DefaultIndentString) {
+    val str = Source.fromFile(file, encodeCharset).getLines.toList.mkString(lineSeparator)
+    val formatted = this.format(str, encodeCharset, lineSeparator, indentString)
+
+    val writer = new OutputStreamWriter(new FileOutputStream(file), encodeCharset)
+    writer.write(formatted)
+    writer.flush
+    writer.close
+  }
+
+}
+
+object NodeType extends Enumeration {
+  val LeftHtmlTag, RightHtmlTag, SingleHtmlTag, DoctypeHtmlTag, VelocitySingleComment, VelocityMultiComment, IfDirective, ElseIfDirective, ElseDirective, EndDirective, SetDirective, ParseDirective, ForeachDirective, LineSeparator, Other = Value
+}
+case class Node(s: String, t: NodeType.Value) {
+  lazy val trimmed = s.trim
 }
