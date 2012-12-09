@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    #set($numbers = [1..5])
+    #foreach($number in $numbers)
+      $number
+      <br>      
+    #end
+  </body>
+</html>

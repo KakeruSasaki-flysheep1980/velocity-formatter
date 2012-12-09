@@ -94,7 +94,7 @@ class Formatter(val lineSeparator: String, val indentString: String) {
       def indent = List.fill(indentLevel)(indentString).mkString
 
       // 改行を挿入
-      if (builder.isEmpty == false && node.t != NodeType.LineSeparator && node.t != NodeType.VelocitySingleComment) {
+      if (builder.isEmpty == false && node.trimmed.isEmpty == false && node.t != NodeType.LineSeparator && node.t != NodeType.VelocitySingleComment) {
         builder.append(lineSeparator)
       }
 
@@ -153,16 +153,6 @@ object Formatter {
   def format(file: File, encodeCharset: String = DefaultEncodeCharset, lineSeparator: String = DefaultLineSeparator, indentString: String = DefaultIndentString): String = {
     val input = Source.fromFile(file, encodeCharset).getLines.toList.mkString(lineSeparator)
     this.format(input, encodeCharset, lineSeparator, indentString)
-  }
-
-  def format2(file: File, encodeCharset: String = DefaultEncodeCharset, lineSeparator: String = DefaultLineSeparator, indentString: String = DefaultIndentString) {
-    val str = Source.fromFile(file, encodeCharset).getLines.toList.mkString(lineSeparator)
-    val formatted = this.format(str, encodeCharset, lineSeparator, indentString)
-
-    val writer = new OutputStreamWriter(new FileOutputStream(file), encodeCharset)
-    writer.write(formatted)
-    writer.flush
-    writer.close
   }
 
 }
