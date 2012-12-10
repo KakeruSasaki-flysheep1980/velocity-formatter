@@ -14,10 +14,9 @@ object ApplicationBuild extends Build {
     .setPreference(DoubleIndentClassDeclaration, true)
     .setPreference(PreserveDanglingCloseParenthesis, true)
 
-  lazy val root = Project(appName, base = file(".")).settings(
-    organization := appOrganization,
-    version := appVersion,
+  lazy val root = Project("root", base = file(".")).aggregate(core, plugin)
 
+  lazy val core = Project("core", base = file("core")).settings(
     resolvers ++= Seq(
       "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
       "releases" at "http://oss.sonatype.org/content/repositories/releases"
@@ -26,5 +25,12 @@ object ApplicationBuild extends Build {
       "org.specs2" %% "specs2" % "1.12.4-SNAPSHOT" % "test"
     )
   ).settings(scalariformSettings: _*).settings(myScalariformSettings)
+
+  lazy val plugin = Project("plugin", base = file("plugin")).settings(
+    sbtPlugin := true,
+    name := appName + "-plugin",
+    organization := appOrganization,
+    version := appVersion
+  ).settings(scalariformSettings: _*).settings(myScalariformSettings).dependsOn(core)
 
 }
