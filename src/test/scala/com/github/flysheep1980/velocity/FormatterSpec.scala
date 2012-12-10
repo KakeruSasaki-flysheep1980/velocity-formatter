@@ -10,7 +10,7 @@ class FormatterSpec extends Specification {
   protected def tester = new Formatter(lineSeparator, "  ")
   protected val lineSeparator = "\n"
 
-  protected def beFormatted(expected: String): Matcher[String] = (input: String) => tester.execute(input) === expected
+  protected def beFormatted(expected: String): Matcher[String] = (input: String) => tester.format(input) === expected
   protected def beFormatted(expected: URL): Matcher[URL] = (input: URL) => {
     val act = Source.fromURL(input, "utf-8").getLines().toList.mkString(lineSeparator)
     val expect = Source.fromURL(expected, "utf-8").getLines().toList.mkString(lineSeparator)

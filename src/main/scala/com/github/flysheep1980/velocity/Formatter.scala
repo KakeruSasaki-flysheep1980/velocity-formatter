@@ -104,7 +104,9 @@ trait NodeBuilder {
 
 trait NodeSplitter {
 
-  protected def lineSeparator: String
+  type SplitIndex = Int
+
+  def lineSeparator: String
 
   /**
    * split string to list of node.
@@ -138,7 +140,7 @@ trait NodeSplitter {
     }
   }
 
-  protected def splitHtml(target: String) = {
+  def splitHtml(target: String): (SplitIndex, NodeType.Value) = {
     lazy val indexToSplit = indexOf(target, '<', '>')
 
     target match {
@@ -151,7 +153,7 @@ trait NodeSplitter {
     }
   }
 
-  protected def splitVelocityDirective(target: String) = {
+  def splitVelocityDirective(target: String): (SplitIndex, NodeType.Value) = {
     lazy val indexToSplit = indexOf(target, '(', ')')
 
     target match {
@@ -170,7 +172,7 @@ trait NodeSplitter {
     }
   }
 
-  protected def indexOf(target: String, left: Char, right: Char): Int = {
+  def indexOf(target: String, left: Char, right: Char): SplitIndex = {
     val firstLeftIndex = target.indexOf(left)
     var diff = 0
     // TODO indexWhereを使ってできそう
