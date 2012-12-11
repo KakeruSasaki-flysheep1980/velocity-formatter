@@ -16,6 +16,7 @@ fuga
 miso *#
 hogehoge ## hogehogehoge
 ## ほげ
+hoge <!-- ふがふが --> fuga<br />
 #foreach($i in $hoge.fuga($miso)) $i #end
 #if($link.setAction("hogefuga").addQueryData("query1", "value1")) hogehoge #elseif($hogehoge()) fugafuga #else piyopiyo #end
 </div></body></html>

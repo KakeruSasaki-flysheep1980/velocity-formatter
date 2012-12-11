@@ -10,19 +10,18 @@ object VelocityFormatterPlugin extends Plugin {
   val velocityFormat = TaskKey[Unit]("velocity-format", "Run to format velocity template file.")
 
   val velocityFormatSettings = Seq(
-    velocitySourceDirectory <<= resourceDirectory(_ / "vm"),
     velocitySources <<= velocitySourceDirectory.map { dir =>
       (dir ** "*.vm").get
     },
     velocityFormat <<= velocityFormatTask
   )
 
-  def velocityFormatTask = (velocitySources, streams) map {
-    (src, s) =>
+  def velocityFormatTask = (velocitySourceDirectory, velocitySources, streams) map {
+    (dir, src, s) =>
       {
-        s.log.info("velocity format... src is [%s]".format(src))
+        s.log.info("format [%d] velocity template files in [%s]".format(src.length, dir.get.map(_.getPath).mkString(",")))
         src.get foreach { f =>
-          s.log.info("velocity format... file is [%s]".format(f.getPath))
+          s.log.info("Formatting [%s]".format(f.getPath))
           com.github.flysheep1980.velocity.Formatter.formatFile(f)
         }
       }

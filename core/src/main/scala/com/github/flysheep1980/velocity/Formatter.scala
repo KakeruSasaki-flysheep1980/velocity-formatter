@@ -23,7 +23,18 @@ object Formatter {
     val input = Source.fromFile(file, encodeCharset).getLines.toList.mkString(lineSeparator)
     val formatted = formatString(input, encodeCharset, lineSeparator, indentString)
 
-    val writer = new OutputStreamWriter(new FileOutputStream(file, false), encodeCharset)
+    val writer = new OutputStreamWriter(new FileOutputStream(file), encodeCharset)
+    writer.write(formatted)
+    writer.flush()
+    writer.close()
+  }
+
+  def formatFileNoOverwrite(file: File, encodeCharset: String = DefaultEncodeCharset, lineSeparator: String = DefaultLineSeparator, indentString: String = DefaultIndentString) {
+    val input = Source.fromFile(file, encodeCharset).getLines.toList.mkString(lineSeparator)
+    val formatted = formatString(input, encodeCharset, lineSeparator, indentString)
+
+    val output = new File("output.dat")
+    val writer = new OutputStreamWriter(new FileOutputStream(output), encodeCharset)
     writer.write(formatted)
     writer.flush()
     writer.close()
@@ -32,7 +43,7 @@ object Formatter {
 }
 
 object NodeType extends Enumeration {
-  val LeftHtmlTag, RightHtmlTag, SingleHtmlTag, DoctypeHtmlTag, VelocitySingleComment, VelocityMultiComment, IfDirective, ElseIfDirective, ElseDirective, EndDirective, SetDirective, ParseDirective, ForeachDirective, LineSeparator, Other = Value
+  val LeftHtmlTag, RightHtmlTag, SingleHtmlTag, DoctypeHtmlTag, HtmlComment, VelocitySingleComment, VelocityMultiComment, IfDirective, ElseIfDirective, ElseDirective, EndDirective, SetDirective, ParseDirective, ForeachDirective, LineSeparator, Other = Value
 }
 
 case class Node(s: String, t: NodeType.Value) {
@@ -57,7 +68,9 @@ trait NodeBuilder {
       def indent = List.fill(indentLevel)(indentString).mkString
 
       // 改行を挿入
-      if (builder.isEmpty == false && node.trimmed.isEmpty == false && node.t != NodeType.LineSeparator && node.t != NodeType.VelocitySingleComment) {
+      if (builder.isEmpty == false && node.trimmed.isEmpty == false
+        && node.t != NodeType.LineSeparator && node.t != NodeType.VelocitySingleComment) {
+
         builder.append(lineSeparator)
       }
 
@@ -82,10 +95,10 @@ trait NodeBuilder {
         case NodeType.VelocitySingleComment => {
           builder.append(node.s)
         }
-        case NodeType.VelocityMultiComment => {
+        case NodeType.VelocityMultiComment | NodeType.HtmlComment => {
           if (node.s.contains(lineSeparator)) { // 複数行コメント
             builder.append(indent)
-            builder.append(node.trimmed.replaceAll(lineSeparator, lineSeparator + indent + " * "))
+            builder.append(node.trimmed.replaceAll(lineSeparator, lineSeparator + indent + "   "))
           } else { // 単一行コメント
             builder.append(indent)
             builder.append(node.trimmed)
@@ -144,6 +157,10 @@ trait NodeSplitter {
     lazy val indexToSplit = indexOf(target, '<', '>')
 
     target match {
+      case _@ s if s.startsWith("<!--") => {
+        val right = "-->"
+        (s.indexOf(right) + right.length, NodeType.HtmlComment)
+      }
       case _@ s if s.startsWith("<!") => (indexToSplit, NodeType.DoctypeHtmlTag)
       case _@ s if s.startsWith("</") => (indexToSplit, NodeType.RightHtmlTag)
       case _@ s if s.startsWith("<br") | s.startsWith("<hr") | s.startsWith("<meta") => {
