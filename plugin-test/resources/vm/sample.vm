@@ -25,7 +25,7 @@
 			#* hoge
 			 * fuga
 			 * miso *#
-			hogehoge## hogehogehoge## ÇŸÇ∞
+			hogehoge## hogehogehoge## „Åª„Åí
 			#foreach($i in $hoge.fuga($miso))
 				$i
 			#end

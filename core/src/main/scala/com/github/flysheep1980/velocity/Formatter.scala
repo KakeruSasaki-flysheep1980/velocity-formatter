@@ -23,7 +23,7 @@ object Formatter {
     val input = Source.fromFile(file, encodeCharset).getLines.toList.mkString(lineSeparator)
     val formatted = formatString(input, encodeCharset, lineSeparator, indentString)
 
-    val writer = new FileWriter(file)
+    val writer = new OutputStreamWriter(new FileOutputStream(file, false), encodeCharset)
     writer.write(formatted)
     writer.flush()
     writer.close()

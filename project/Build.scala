@@ -10,14 +10,18 @@ object ApplicationBuild extends Build {
   val pluginName      = appName + "-plugin"
   val appVersion      = "0.1-SNAPSHOT"
 
-  lazy val myScalariformSettings = ScalariformKeys.preferences := FormattingPreferences()
-    .setPreference(IndentWithTabs, false)
-    .setPreference(DoubleIndentClassDeclaration, true)
-    .setPreference(PreserveDanglingCloseParenthesis, true)
+  lazy val standardSettings = Defaults.defaultSettings ++ myScalariformSettings
+
+  lazy val myScalariformSettings = scalariformSettings ++ Seq(
+    ScalariformKeys.preferences := FormattingPreferences()
+      .setPreference(IndentWithTabs, false)
+      .setPreference(DoubleIndentClassDeclaration, true)
+      .setPreference(PreserveDanglingCloseParenthesis, true)
+  )
 
   lazy val root = Project("root", base = file(".")).aggregate(core, plugin)
 
-  lazy val core = Project("core", base = file("core")).settings(
+  lazy val core = Project("core", base = file("core"), settings = standardSettings ++ Seq(
     resolvers ++= Seq(
       "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
       "releases" at "http://oss.sonatype.org/content/repositories/releases"
@@ -28,19 +32,13 @@ object ApplicationBuild extends Build {
     name := appName,
     organization := appOrganization,
     version := appVersion
-  ).settings(scalariformSettings: _*).settings(myScalariformSettings)
+  ))
 
-  lazy val plugin = Project("plugin", base = file("plugin")).settings(
+  lazy val plugin = Project("plugin", base = file("plugin"), settings = standardSettings ++ Seq(
     sbtPlugin := true,
     name := pluginName,
     organization := appOrganization,
-    version := appVersion,
-    externalResolvers <<= resolvers map { rs =>
-      Resolver.withDefaultResolvers(rs, mavenCentral = false)
-    },
-    libraryDependencies ++= Seq(
-      appOrganization %% appName % appVersion
-    )
-  ).settings(com.github.retronym.SbtOneJar.oneJarSettings: _*).settings(scalariformSettings: _*).settings(myScalariformSettings)
+    version := appVersion
+  )).dependsOn(core)
 
 }

@@ -3,10 +3,14 @@ import Keys._
 
 object ApplicationBuild extends Build {
 
-  lazy val pluginTest = Project("plugin-test", base = file(".")).settings(
-    resourceDirectory <<= baseDirectory(_ / "resources"),
+  lazy val myVelocityPluginSettings = com.github.flysheep1980.velocity.plugin.VelocityFormatterPlugin.velocityFormatSettings ++ Seq(
+    resourceDirectory <<= baseDirectory(_ / "resources")
+  )
+
+  lazy val pluginTest = Project("plugin-test", base = file("."), settings = Defaults.defaultSettings ++ myVelocityPluginSettings ++ Seq(
     externalResolvers <<= resolvers map { rs =>
       Resolver.withDefaultResolvers(rs, mavenCentral = false)
     }
-  ).settings(com.github.flysheep1980.velocity.plugin.VelocityFormatterPlugin.velocityFormatSettings: _*)
+  ))
+
 }
