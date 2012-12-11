@@ -7,6 +7,7 @@ object ApplicationBuild extends Build {
 
   val appOrganization	= "com.github.flysheep1980"
   val appName         = "velocity-formatter"
+  val pluginName      = appName + "-plugin"
   val appVersion      = "0.1-SNAPSHOT"
 
   lazy val myScalariformSettings = ScalariformKeys.preferences := FormattingPreferences()
@@ -23,14 +24,23 @@ object ApplicationBuild extends Build {
     ),
     libraryDependencies ++= Seq(
       "org.specs2" %% "specs2" % "1.12.4-SNAPSHOT" % "test"
-    )
+    ),
+    name := appName,
+    organization := appOrganization,
+    version := appVersion
   ).settings(scalariformSettings: _*).settings(myScalariformSettings)
 
   lazy val plugin = Project("plugin", base = file("plugin")).settings(
     sbtPlugin := true,
-    name := appName + "-plugin",
+    name := pluginName,
     organization := appOrganization,
-    version := appVersion
-  ).settings(scalariformSettings: _*).settings(myScalariformSettings).dependsOn(core)
+    version := appVersion,
+    externalResolvers <<= resolvers map { rs =>
+      Resolver.withDefaultResolvers(rs, mavenCentral = false)
+    },
+    libraryDependencies ++= Seq(
+      appOrganization %% appName % appVersion
+    )
+  ).settings(com.github.retronym.SbtOneJar.oneJarSettings: _*).settings(scalariformSettings: _*).settings(myScalariformSettings)
 
 }
