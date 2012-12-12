@@ -77,18 +77,23 @@ trait NodeSplitter {
   }
 
   def indexOf(target: String, left: Char, right: Char): SplitIndex = {
-    val firstLeftIndex = target.indexOf(left)
-    var diff = 0
-    // TODO indexWhereを使ってできそう
-    val taken = target.drop(firstLeftIndex).takeWhile { c =>
-      c match {
-        case _@ a if a == left => diff += 1
-        case _@ a if a == right => diff -= 1
-        case _ => // do nothing
+    lazy val firstRightIndex = target.indexOf(right)
+    target.indexOf(left) match {
+      case _@ firstLeftIndex if firstLeftIndex != -1 && firstLeftIndex < firstRightIndex => {
+        var diff = 0
+        // TODO indexWhereを使ってできそう
+        val taken = target.drop(firstLeftIndex).takeWhile { c =>
+          c match {
+            case _@ a if a == left => diff += 1
+            case _@ a if a == right => diff -= 1
+            case _ => // do nothing
+          }
+          diff != 0
+        }
+        firstLeftIndex + taken.length + 1
       }
-      diff != 0
+      case _ => -1
     }
-    firstLeftIndex + taken.length + 1
   }
 
 }
