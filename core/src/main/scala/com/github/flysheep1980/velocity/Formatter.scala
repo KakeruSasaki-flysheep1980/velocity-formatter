@@ -163,7 +163,7 @@ trait NodeSplitter {
       }
       case _@ s if s.startsWith("<!") => (indexToSplit, NodeType.DoctypeHtmlTag)
       case _@ s if s.startsWith("</") => (indexToSplit, NodeType.RightHtmlTag)
-      case _@ s if s.startsWith("<br") | s.startsWith("<hr") | s.startsWith("<meta") => {
+      case _@ s if s.startsWith("<br") | s.startsWith("<hr") | s.startsWith("<meta") | s.startsWith("<img") => {
         (indexToSplit, NodeType.SingleHtmlTag)
       }
       case _ => (indexToSplit, NodeType.LeftHtmlTag)
