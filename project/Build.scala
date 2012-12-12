@@ -1,6 +1,6 @@
 import sbt._
 import Keys._
-import com.typesafe.sbt.SbtScalariform._
+import com.typesafe.sbtscalariform.ScalariformPlugin._
 import scalariform.formatter.preferences._
 
 object ApplicationBuild extends Build {
@@ -21,6 +21,13 @@ object ApplicationBuild extends Build {
 
   lazy val root = Project("root", base = file(".")).aggregate(core, plugin)
 
+  lazy val plugin = Project("plugin", base = file("plugin"), settings = standardSettings ++ Seq(
+    sbtPlugin := true,
+    name := pluginName,
+    organization := appOrganization,
+    version := appVersion
+  )).dependsOn(core)
+
   lazy val core = Project("core", base = file("core"), settings = standardSettings ++ Seq(
     resolvers ++= Seq(
       "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
@@ -33,12 +40,5 @@ object ApplicationBuild extends Build {
     organization := appOrganization,
     version := appVersion
   ))
-
-  lazy val plugin = Project("plugin", base = file("plugin"), settings = standardSettings ++ Seq(
-    sbtPlugin := true,
-    name := pluginName,
-    organization := appOrganization,
-    version := appVersion
-  )).dependsOn(core)
 
 }
