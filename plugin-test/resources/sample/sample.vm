@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <meta http-equiv="Cache-Control" content="no-cache">
 </head>
-<body>
+<body style="background-color:#ffffff;color:#000000;">
 <div id="container">
 <span class="class1">hoge</span><br>
 #set($numbers = [1...5])
