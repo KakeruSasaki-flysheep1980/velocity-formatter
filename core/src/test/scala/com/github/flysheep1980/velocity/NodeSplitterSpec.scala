@@ -79,6 +79,34 @@ class NodeSplitterSpec extends Specification {
       tester.split(input) === List(Node(input, NodeType.Other))
     }
 
+    "split 'html doctype tag'." in {
+      tester.split("""xxx <!DOCTYPE HTML> xxx""") === List(
+        Node("xxx ", NodeType.Other),
+        Node("<!DOCTYPE HTML>", NodeType.DoctypeHtmlTag),
+        Node(" xxx", NodeType.Other)
+      )
+
+      tester.split("""xxx <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"> xxx""") === List(
+        Node("xxx ", NodeType.Other),
+        Node("""<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">""", NodeType.DoctypeHtmlTag),
+        Node(" xxx", NodeType.Other)
+      )
+    }
+
+    "split 'html comment'." in {
+      tester.split("""<html><body>xxx<div align="left">yyy</div></body></html>""") === List(
+        Node("<html>", NodeType.LeftHtmlTag),
+        Node("<body>", NodeType.LeftHtmlTag),
+        Node("xxx", NodeType.Other),
+        Node("""<div align="left">""", NodeType.LeftHtmlTag),
+        Node("yyy", NodeType.Other),
+        Node("</div>", NodeType.RightHtmlTag),
+        Node("</body>", NodeType.RightHtmlTag),
+        Node("</html>", NodeType.RightHtmlTag),
+        Node("", NodeType.Other)
+      )
+    }
+
   }
 
 }
