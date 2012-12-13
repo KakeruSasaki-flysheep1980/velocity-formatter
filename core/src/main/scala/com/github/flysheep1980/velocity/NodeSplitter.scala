@@ -15,7 +15,7 @@ trait NodeSplitter {
    * @return list of node
    */
   def split(target: String): List[Node] = {
-    val regex = List("<", "#", lineSeparator).mkString("|").r
+    val regex = List("<", "#if", "#elseif", "#else", "#end", "#foreach", "#parse", "#set", "#\\*", lineSeparator).mkString("|").r
     regex.findFirstMatchIn(target) match {
       case Some(m) => {
         // 分割位置 - 文字列の最初からこのindex値までを取り出す
@@ -27,7 +27,7 @@ trait NodeSplitter {
             Matcher.quoteReplacement(m.group(0)) match {
               case _@ s if s == lineSeparator => (m.end, NodeType.LineSeparator)
               case _@ s if s == "<" => splitHtml(target)
-              case _@ s if s == "#" => splitVelocityDirective(target)
+              case _@ s if s.startsWith("#") => splitVelocityDirective(target)
             }
           }
         }

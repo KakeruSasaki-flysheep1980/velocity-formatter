@@ -74,6 +74,11 @@ class NodeSplitterSpec extends Specification {
       )
     }
 
+    "not split 'style color code'." in {
+      val input = """ style="background-color:#FFEEF4;color:#FF8991;" """
+      tester.split(input) === List(Node(input, NodeType.Other))
+    }
+
   }
 
 }
