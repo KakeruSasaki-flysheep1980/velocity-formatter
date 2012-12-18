@@ -1,13 +1,10 @@
-velocity-formatter
-==================
-
 # Velocity Template Formatter
 
 ## Usage
 
 ### 1. build plugin
 
-Clone this project.
+Clone and build this project, and publish-local.
 
 ```git clone velocity-formatter```
 
