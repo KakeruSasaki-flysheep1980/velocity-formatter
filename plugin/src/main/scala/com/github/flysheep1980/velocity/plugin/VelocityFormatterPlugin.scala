@@ -25,10 +25,11 @@ object VelocityFormatterPlugin extends Plugin {
         val lineSeparator = conf.config.get(VelocityFormatterConfigKey.LineSeparator).getOrElse("\n")
         val indentString = conf.config.get(VelocityFormatterConfigKey.IndentString).getOrElse("\t")
 
-        s.log.info("format %d velocity template files in [%s]".format(src.length, dir.get.map(_.getPath).mkString(",")))
+        s.log.info("format %d velocity template files in [%s].".format(src.length, dir.get.map(_.getPath).mkString(",")))
         src.get foreach { f =>
-          s.log.info("Formatting [%s]".format(f.getPath))
-          com.github.flysheep1980.velocity.Formatter.formatFile(f, encodeCharset, lineSeparator, indentString)
+          s.log.info("Formatting [%s].".format(f.getPath))
+          val result = com.github.flysheep1980.velocity.Formatter.formatFile(f, encodeCharset, lineSeparator, indentString)
+          if (result.indentLevel != 0) s.log.warn("Invalid format found in [%s].".format(f.getPath))
         }
       }
   }

@@ -11,7 +11,7 @@ trait NodeBuilder {
    * @param nodes list of node
    * @return
    */
-  def build(nodes: List[Node]): String = {
+  def build(nodes: List[Node]): (String, BuildResult) = {
     var indentLevel = 0
     val builder = new StringBuilder
     nodes.foreach { node =>
@@ -61,6 +61,8 @@ trait NodeBuilder {
       }
     }
 
-    builder.toString
+    (builder.toString, BuildResult(indentLevel))
   }
 }
+
+case class BuildResult(indentLevel: Int)
