@@ -38,11 +38,11 @@ object Formatter {
     val input = Source.fromFile(file, encodeCharset).getLines.toList.mkString(lineSeparator)
     val (formatted, result) = formatString(input, encodeCharset, lineSeparator, indentString)
 
-    val output = new File("output.dat")
-    val writer = new OutputStreamWriter(new FileOutputStream(output), encodeCharset)
-    writer.write(formatted)
-    writer.flush()
-    writer.close()
+    //    val output = new File("output.dat")
+    //    val writer = new OutputStreamWriter(new FileOutputStream(output), encodeCharset)
+    //    writer.write(formatted)
+    //    writer.flush()
+    //    writer.close()
 
     result
   }
