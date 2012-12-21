@@ -44,15 +44,15 @@ object VelocityFormatterPlugin extends Plugin {
         val indentString = conf.config.get(VelocityFormatterConfigKey.IndentString).getOrElse("\t")
 
         s.log.info("Find invalid format files of velocity template. all %d files in [%s].".format(src.length, dir.get.map(_.getPath).mkString(",")))
-        var invalitFileCount = 0
+        var invalidFileCount = 0
         src.get foreach { f =>
           val result = com.github.flysheep1980.velocity.Formatter.formatFileNoOverwrite(f, encodeCharset, lineSeparator, indentString)
           if (result.indentLevel != 0) {
             s.log.info("Invalid format found in [%s].".format(f.getPath))
-            invalitFileCount += 1
+            invalidFileCount += 1
           }
         }
-        s.log.info("Found %d files is invalid format.".format(invalitFileCount))
+        s.log.info("Found %d files is invalid format.".format(invalidFileCount))
       }
   }
 
