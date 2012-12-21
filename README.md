@@ -78,7 +78,7 @@ After:
 Clone and build this project, and publish-local.
 
 ```
-> git clone velocity-formatter```
+> git clone velocity-formatter
 > cd velocity-formatter
 > sbt publish-local
 ```
@@ -112,14 +112,14 @@ val xxx = Project(...).settings(VelocityFormatterPlugin.velocityFormatSettings: 
 
 ## Format Configurations
 
-* Directory of velocity template files
+* Directory of velocity template files. (must be set)
 
 ```
 // ${project_root}/resources/vm
 VelocityFormatterPlugin.velocitySourceDirectory <<= baseDirectory(_ / "resources" / "vm"),
 ```
 
-* Indent of format. ```default: \t```
+* Indent string of format. ```default: \t```
 
 ```
 // indent string is space
@@ -127,7 +127,7 @@ VelocityFormatterPlugin.velocityFormatConfig := VelocityFormatterPlugin.Velocity
   .setConfig(VelocityFormatterConfigKey.IndentString, " ")
 ```
 
-* Encode charset. ```default: utf-8```
+* Encode charset of file. ```default: utf-8```
 
 ```
 // encode charset euc-jp
