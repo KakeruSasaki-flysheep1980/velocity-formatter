@@ -1,16 +1,24 @@
 # Velocity Template Formatter
 
+Format velocity template. See below example:
+
+```
+
+```
+
 ## Usage
 
-### 1. build plugin
+### 1. Build plugin
 
 Clone and build this project, and publish-local.
 
-```git clone velocity-formatter```
+```
+> git clone velocity-formatter```
+> cd velocity-formatter
+> sbt publish-local
+```
 
-```sbt publish-local```
-
-### 2. install plugin
+### 2. Install plugin
 
 Edit your project's ```plugins.sbt```.
 
@@ -31,7 +39,7 @@ val xxx = Project(...).settings(VelocityFormatterPlugin.velocityFormatSettings: 
 )
 ```
 
-### 3. run to format
+### 3. Run to format
 
 ```
 > sbt velocity-format
@@ -46,7 +54,7 @@ val xxx = Project(...).settings(VelocityFormatterPlugin.velocityFormatSettings: 
 VelocityFormatterPlugin.velocitySourceDirectory <<= baseDirectory(_ / "resources" / "vm"),
 ```
 
-* Indent String of format. ```default: \t```
+* Indent of format. ```default: \t```
 
 ```
 // indent string is space
