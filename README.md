@@ -2,8 +2,73 @@
 
 Format velocity template. See below example:
 
+Before:
+```
+<!DOCTYPE html><html><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<meta http-equiv="Cache-Control" content="no-cache">
+</head>
+<body style="background-color:#ffffff;color:#000000;">
+<div id="container">
+<span class="class1">hoge</span><br>
+#set($numbers = [1...5])
+#foreach($number in $numbers)
+ $number<br>
+#end
+#set($linkUrl = "/hoge")
+#*<span class="hoge">aa</span>*#<a href="${linkUrl}">hoge</a><br />
+#* hoge
+fuga
+miso *#
+hogehoge ## hogehogehoge
+#foreach($i in $hoge.fuga($miso)) $i #end
+#if($link.setAction("hogefuga").addQueryData("query1", "value1")) hogehoge #elseif($hogehoge()) fugafuga #else piyopiyo #end
+</div></body></html>
 ```
 
+After:
+```
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<meta http-equiv="Cache-Control" content="no-cache">
+	</head>
+	<body style="background-color:#ffffff;color:#000000;">
+		<div id="container">
+			<span class="class1">
+				hoge
+			</span>
+			<br>
+			#set($numbers = [1...5])
+			#foreach($number in $numbers)
+				$number
+				<br>
+			#end
+			#set($linkUrl = "/hoge")
+			#*<span class="hoge">aa</span>*#
+			<a href="${linkUrl}">
+				hoge
+			</a>
+			<br />
+			#* hoge
+			   fuga
+			   miso *#
+			hogehoge## hogehogehoge
+			#foreach($i in $hoge.fuga($miso))
+				$i
+			#end
+			#if($link.setAction("hogefuga").addQueryData("query1", "value1"))
+				hogehoge
+			#elseif($hogehoge())
+				fugafuga
+			#else
+				piyopiyo
+			#end
+		</div>
+	</body>
+</html>
 ```
 
 ## Usage
