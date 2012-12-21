@@ -110,6 +110,12 @@ val xxx = Project(...).settings(VelocityFormatterPlugin.velocityFormatSettings: 
 > sbt velocity-format
 ```
 
+Or, Run to show invalid format files.
+
+```
+> sbt velocity-invalid-format-list
+```
+
 ## Format Configurations
 
 * Directory of velocity template files. (must be set)
