@@ -2,6 +2,7 @@ import sbt._
 import Keys._
 import com.typesafe.sbtscalariform.ScalariformPlugin._
 import scalariform.formatter.preferences._
+import com.github.retronym.SbtOneJar
 
 object ApplicationBuild extends Build {
 
@@ -28,17 +29,18 @@ object ApplicationBuild extends Build {
     version := appVersion
   )).dependsOn(core)
 
-  lazy val core = Project("core", base = file("core"), settings = standardSettings ++ Seq(
+  lazy val core = Project("core", base = file("core"), settings = standardSettings ++ SbtOneJar.oneJarSettings ++ Seq(
     resolvers ++= Seq(
       "snapshots" at "http://oss.sonatype.org/content/repositories/snapshots",
       "releases" at "http://oss.sonatype.org/content/repositories/releases"
     ),
     libraryDependencies ++= Seq(
-      "org.specs2" %% "specs2" % "1.12.4-SNAPSHOT" % "test"
+      "org.specs2" %% "specs2" % "1.12.3" % "test"
     ),
     name := appName,
     organization := appOrganization,
-    version := appVersion
+    version := appVersion,
+    exportJars := true
   ))
 
 }

@@ -13,6 +13,7 @@ trait NodeBuilder {
    */
   def build(nodes: List[Node]): (String, BuildResult) = {
     var indentLevel = 0
+    var ifIndentLevel = Seq.empty[Int]
     val builder = new StringBuilder
     nodes.foreach { node =>
       def indent = List.fill(indentLevel)(indentString).mkString
@@ -25,19 +26,39 @@ trait NodeBuilder {
       }
 
       node.t match {
-        case NodeType.LineSeparator => // do nothing
-        case NodeType.LeftHtmlTag | NodeType.IfDirective | NodeType.ForeachDirective => {
+        case NodeType.LineSeparator => {
+          // do nothing
+        }
+        case NodeType.IfDirective => {
+          builder.append(indent)
+          builder.append(node.trimmed)
+          ifIndentLevel = Seq(indentLevel) ++ ifIndentLevel
+          indentLevel += 1
+        }
+        case NodeType.LeftHtmlTag | NodeType.ForeachDirective => {
           builder.append(indent)
           builder.append(node.trimmed)
           indentLevel += 1
         }
         case NodeType.ElseIfDirective | NodeType.ElseDirective => {
           indentLevel -= 1
+          if (ifIndentLevel.isEmpty == false) {
+            indentLevel = ifIndentLevel.head
+          }
           builder.append(indent)
           builder.append(node.trimmed)
           indentLevel += 1
         }
-        case NodeType.RightHtmlTag | NodeType.EndDirective => {
+        case NodeType.EndDirective => {
+          indentLevel -= 1
+          if (ifIndentLevel.isEmpty == false) {
+            indentLevel = ifIndentLevel.head
+            ifIndentLevel = ifIndentLevel.tail
+          }
+          builder.append(indent)
+          builder.append(node.trimmed)
+        }
+        case NodeType.RightHtmlTag => {
           indentLevel -= 1
           builder.append(indent)
           builder.append(node.trimmed)
@@ -48,7 +69,7 @@ trait NodeBuilder {
         case NodeType.VelocityMultiComment | NodeType.HtmlComment => {
           if (node.s.contains(lineSeparator)) { // 複数行コメント
             builder.append(indent)
-            builder.append(node.trimmed.replaceAll(lineSeparator, lineSeparator + indent + "   "))
+            builder.append(node.trimmed.replaceAll(lineSeparator, lineSeparator + indent + "   " /* [#* ][ *#]の整形のため */ ))
           } else { // 単一行コメント
             builder.append(indent)
             builder.append(node.trimmed)

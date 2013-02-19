@@ -26,11 +26,12 @@ object VelocityFormatterPlugin extends Plugin {
         val encodeCharset = conf.config.get(VelocityFormatterConfigKey.EncodeCharset).getOrElse("utf-8")
         val lineSeparator = conf.config.get(VelocityFormatterConfigKey.LineSeparator).getOrElse("\n")
         val indentString = conf.config.get(VelocityFormatterConfigKey.IndentString).getOrElse("\t")
+        val formatConfig = com.github.flysheep1980.velocity.FormatConfig(false, encodeCharset, indentString, lineSeparator)
 
         s.log.info("Format %d velocity template files in [%s].".format(src.length, dir.get.map(_.getPath).mkString(",")))
         src.get foreach { f =>
           s.log.info("Formatting [%s].".format(f.getPath))
-          val result = com.github.flysheep1980.velocity.Formatter.formatFile(f, encodeCharset, lineSeparator, indentString)
+          val result = com.github.flysheep1980.velocity.Formatter.format(f, formatConfig)
           if (result.indentLevel != 0) s.log.warn("Invalid format found in [%s].".format(f.getPath))
         }
       }
@@ -42,11 +43,12 @@ object VelocityFormatterPlugin extends Plugin {
         val encodeCharset = conf.config.get(VelocityFormatterConfigKey.EncodeCharset).getOrElse("utf-8")
         val lineSeparator = conf.config.get(VelocityFormatterConfigKey.LineSeparator).getOrElse("\n")
         val indentString = conf.config.get(VelocityFormatterConfigKey.IndentString).getOrElse("\t")
+        val formatConfig = com.github.flysheep1980.velocity.FormatConfig(false, encodeCharset, indentString, lineSeparator)
 
         s.log.info("Find invalid format files of velocity template. all %d files in [%s].".format(src.length, dir.get.map(_.getPath).mkString(",")))
         var invalidFileCount = 0
         src.get foreach { f =>
-          val result = com.github.flysheep1980.velocity.Formatter.formatFileNoOverwrite(f, encodeCharset, lineSeparator, indentString)
+          val result = com.github.flysheep1980.velocity.Formatter.format(f, formatConfig)
           if (result.indentLevel != 0) {
             s.log.info("Invalid format found in [%s].".format(f.getPath))
             invalidFileCount += 1

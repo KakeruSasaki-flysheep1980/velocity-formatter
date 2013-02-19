@@ -71,16 +71,18 @@ After:
 </html>
 ```
 
-## Usage
+# Usage(sbt-plugin)
+
+## Step
 
 ### 1. Build plugin
 
 Clone and build this project, and publish-local.
 
 ```
-> git clone velocity-formatter
-> cd velocity-formatter
-> sbt publish-local
+]# git clone velocity-formatter
+]# cd velocity-formatter
+]# sbt publish-local
 ```
 
 ### 2. Install plugin
@@ -107,13 +109,13 @@ val xxx = Project(...).settings(VelocityFormatterPlugin.velocityFormatSettings: 
 ### 3. Run to format
 
 ```
-> sbt velocity-format
+]# sbt velocity-format
 ```
 
 Or, Run to show invalid format files.
 
 ```
-> sbt velocity-invalid-format-list
+]# sbt velocity-invalid-format-list
 ```
 
 ## Format Configurations
@@ -139,4 +141,59 @@ VelocityFormatterPlugin.velocityFormatConfig := VelocityFormatterPlugin.Velocity
 // encode charset euc-jp
 VelocityFormatterPlugin.velocityFormatConfig := VelocityFormatterPlugin.VelocityFormatterConfig()
   .setConfig(VelocityFormatterConfigKey.EncodeCharset, "euc-jp")
+```
+
+# Usage(jar execution)
+
+## Step
+
+### 1. Build plugin and publish jar
+
+Clone and build this project, and one-jar.
+
+```
+]# git clone velocity-formatter
+]# cd velocity-formatter
+]# sbt
+> project core
+> one-jar
+```
+
+### 2. Run to format
+
+Run to show invalid format files.
+
+```
+]# java -jar {path_to_jar} {path_of_template_directory or path_of_template_file}
+```
+
+Or, Run to format.
+
+```
+]# java -Dformat.show.only=false -jar {path_to_jar} {path_of_template_directory or path_of_template_file}
+```
+
+## Format Configurations
+
+Set by ```VM Argument```
+
+* format.show.only ```Default: true```
+
+* format.encode.charset ```Default: utf-8```
+
+* format.indent.string ```Default: \t```
+
+* format.line.separator ```Default: \n```
+
+## Using by Ant
+
+Edit ```Build.xml``` as below, and Call target.
+
+```
+<target name="some_target_name">
+ <java jar="path_of_jar" fork="true" logError="true">
+   <arg value="path_of_template_directory or path_of_template_file" />
+   <jvmarg value="-Dshow.only=true" />
+ </java>
+</target>
 ```
