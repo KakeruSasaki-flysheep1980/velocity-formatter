@@ -17,6 +17,7 @@ trait NodeBuilder {
     val builder = new StringBuilder
     nodes.foreach { node =>
       def indent = List.fill(indentLevel)(indentString).mkString
+      //      def indent = "[%s]".format(indentLevel)
 
       // 改行を挿入
       if (builder.isEmpty == false && node.trimmed.isEmpty == false
@@ -76,8 +77,10 @@ trait NodeBuilder {
           }
         }
         case _ => {
-          builder.append(indent)
-          builder.append(node.trimmed)
+          if (node.trimmed.isEmpty == false) {
+            builder.append(indent)
+            builder.append(node.trimmed)
+          }
         }
       }
     }
