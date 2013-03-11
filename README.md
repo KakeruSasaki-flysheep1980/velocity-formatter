@@ -71,7 +71,7 @@ After:
 </html>
 ```
 
-# Usage(sbt-plugin)
+# Usage by Sbt Plugin
 
 ## Step
 
@@ -143,7 +143,7 @@ VelocityFormatterPlugin.velocityFormatConfig := VelocityFormatterPlugin.Velocity
   .setConfig(VelocityFormatterConfigKey.EncodeCharset, "euc-jp")
 ```
 
-# Usage(jar execution)
+# Usage by Jar
 
 ## Step
 
@@ -159,18 +159,20 @@ Clone and build this project, and one-jar.
 > one-jar
 ```
 
+Published to ```core/target/scala-2.9.1/velocity-formatter_2.9.1-xxxxxxxx-one-jar.jar```
+
 ### 2. Run to format
 
 Run to show invalid format files.
 
 ```
-]# java -jar {path_to_jar} {path_of_template_directory or path_of_template_file}
+]# java -jar {path_to_jar} {path_of_template_directory or file} {path_of_template_directory or file}...
 ```
 
 Or, Run to format.
 
 ```
-]# java -Dformat.show.only=false -jar {path_to_jar} {path_of_template_directory or path_of_template_file}
+]# java -Dformat.show.only=false -jar {path_to_jar} {path_of_template_directory or file}...
 ```
 
 ## Format Configurations
@@ -178,6 +180,8 @@ Or, Run to format.
 Set by ```VM Argument```
 
 * format.show.only ```Default: true```
+
+If ```false```, files is overwritten as formatted.
 
 * format.encode.charset ```Default: utf-8```
 
@@ -192,7 +196,7 @@ Edit ```Build.xml``` as below, and Call target.
 ```
 <target name="some_target_name">
  <java jar="path_of_jar" fork="true" logError="true">
-   <arg value="path_of_template_directory or path_of_template_file" />
+   <arg value="path_of_template_directory or file" />
    <jvmarg value="-Dshow.only=true" />
  </java>
 </target>
