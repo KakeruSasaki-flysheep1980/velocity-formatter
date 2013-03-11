@@ -7,7 +7,7 @@
     #set($numbers = [1..5])
     #foreach($number in $numbers)
       $number
-      <br>      
+      <br>
     #end
   </body>
 </html>
