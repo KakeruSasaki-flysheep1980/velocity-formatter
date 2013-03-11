@@ -179,9 +179,7 @@ Or, Run to format.
 
 Set by ```VM Argument```
 
-* format.show.only ```Default: true```
-
-If ```false```, files is overwritten as formatted.
+* format.show.only ```Default: true```. If ```false```, files is overwritten as formatted.
 
 * format.encode.charset ```Default: utf-8```
 
