@@ -94,18 +94,18 @@ object Formatter {
         }
       }.flatten
     }
-    println("target file size is [%d]".format(files.size))
+    println("target is [%d] files.".format(files.size))
 
     // format設定
     val config = {
       import scala.util.control.Exception.allCatch
-      val overwrite = getSystemProperty(JVMKeys.ShowOnly).flatMap(a => allCatch.opt(a.toBoolean)).getOrElse(true)
+      val overwrite = getSystemProperty(JVMKeys.ShowOnly).flatMap(prop => allCatch.opt(!prop.toBoolean)).getOrElse(false)
       val encodeCharset = getSystemProperty(JVMKeys.EncodeCharset).getOrElse("utf-8")
       val indentString = getSystemProperty(JVMKeys.IndentString).getOrElse("\t")
       val lineSeparator = getSystemProperty(JVMKeys.LineSeparator).getOrElse("\n")
       FormatConfig(overwrite, encodeCharset, indentString, lineSeparator)
     }
-    println("format configuration is [%s]".format(config))
+    //    println("format configuration is [%s]".format(config))
 
     // formatした結果
     val results = files.map { file =>
